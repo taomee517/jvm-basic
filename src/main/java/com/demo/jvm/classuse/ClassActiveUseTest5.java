@@ -24,6 +24,7 @@ import com.demo.jvm.classuse.model.StaticFinalRandomModel;
 public class ClassActiveUseTest5 {
     public static void main(String[] args) {
         System.out.println(StaticFinalRandomModel.sfrmStr);
+        System.out.println(StaticFinalRandomModel.sfrmStr);
     }
 }
 
