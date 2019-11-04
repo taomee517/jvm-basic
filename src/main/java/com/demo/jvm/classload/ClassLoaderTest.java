@@ -20,8 +20,8 @@ package com.demo.jvm.classload;
 public class ClassLoaderTest {
     public static void main(String[] args) {
         Singleton singleton = Singleton.getInstance();
-        System.out.println(Singleton.counter1);
-        System.out.println(Singleton.counter2);
+        System.out.println("main方法中,counter1 = " + Singleton.counter1);
+        System.out.println("main方法中,counter2 = " + Singleton.counter2);
     }
 
 }
@@ -33,10 +33,12 @@ class Singleton{
     private static Singleton singleton = new Singleton();
 
     private Singleton(){
+        System.out.println("Singleton构造方法累加前,counter1 = " + counter1);
+        System.out.println("Singleton构造方法累加前,counter2 = " + counter2);
         counter1++;
         counter2++;
-        System.out.println("Singleton构造方法中,counter1 = " + counter1);
-        System.out.println("Singleton构造方法中,counter2 = " + counter2);
+        System.out.println("Singleton构造方法累加后,counter1 = " + counter1);
+        System.out.println("Singleton构造方法累加后,counter2 = " + counter2);
     }
 
     public static int counter2 = 0;
