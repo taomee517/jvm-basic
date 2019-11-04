@@ -18,11 +18,22 @@ import com.demo.jvm.classuse.model.StaticFinalModel;
  * @attention 本案例中不涉及除main方法所在类以外的类的主动使用
  * 常量在编译阶段，会被存入到调用这个常量的方法所在的类的常量池中
  * 本质上，调用类并没有直接引用到定义常量的类，因此并不会触发定义常量的类的初始化
+ *
+ * 助记符(javap反编译后可以看到)：
+ * ldc 表示将int、float或是String类型的常量值从常量池中推送至栈顶
+ * bipush 表示将单字节（-128 - 127）的常量值从常量池中推送至栈顶
+ * sipush 表示将单字节（-32768 - 32767）的常量值从常量池中推送至栈顶
+ * iconst_0 表示将int类型1从常量池中推送至栈顶（iconst_m1 - iconst_5）
+ *
+ * 助记符存储的位置：jdk的rt.jar中
  */
 
 public class ClassActiveUseTest4 {
     public static void main(String[] args) {
         System.out.println(StaticFinalModel.sfmStr);
+//        System.out.println(StaticFinalModel.m);
+//        System.out.println(StaticFinalModel.i);
+//        System.out.println(StaticFinalModel.s);
     }
 }
 
