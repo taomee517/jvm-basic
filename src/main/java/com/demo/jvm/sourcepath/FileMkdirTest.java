@@ -1,41 +1,63 @@
 package com.demo.jvm.sourcepath;
 
-import sun.misc.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
 public class FileMkdirTest {
+    private static Logger log = LoggerFactory.getLogger(FileMkdirTest.class);
+
+    public static void main(String[] args) throws Exception {
+        String src = "cert/alipayRootCert.crt";
+        System.out.println(getAbsolutePath(src));
+    }
 
     private static String getAbsolutePath(String sourcePath) throws Exception{
+        String fileName = sourcePath.substring(sourcePath.indexOf("/") + 1);
         String configFilePath = null;
-        if (EnvUtil.isWindows()) {
-            configFilePath = "C:/Program Files/blackTea/config/" + sourcePath;
+        if (isWindows()) {
+            configFilePath = "C:/CacheConfig/blackTea/config/" + fileName;
         } else {
-            configFilePath = "/usr/blackTea/config/" + sourcePath;
+            configFilePath = "/usr/blackTea/config/" + fileName;
         }
+        log.info("文件路径：path = {}", configFilePath);
         File certFile = new File(configFilePath);
         if(!certFile.exists()) {
             if(!certFile.getParentFile().exists()){
                 try {
-                    File parentFile = new File(certFile.getParent() + "\\/");
-                    parentFile.mkdirs();
-                    certFile.createNewFile();
+                    if(certFile.getParentFile().mkdirs()){
+                        certFile.createNewFile();
+                    }else {
+                        log.error("目录：{}创建失败！", certFile.getParent());
+                        return null;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            Resource certResource = new ClassPathResource(sourcePath);
-            InputStream is = certResource.getInputStream();
-            OutputStream os = new FileOutputStream(certFile);
-            try {
-                byte[] temp = new byte[is.available()];
-                is.read(temp);
-                os.write(temp);
-            } finally {
-                is.close();
-                os.close();
-            }
+        }
+
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(sourcePath);
+        OutputStream os = new FileOutputStream(certFile);
+        try {
+            byte[] temp = new byte[is.available()];
+            is.read(temp);
+            os.write(temp);
+        } finally {
+            is.close();
+            os.close();
         }
         return configFilePath;
+    }
+
+
+    private static boolean isWindows(){
+        String os = System.getProperty("os.name");
+        if(os.toLowerCase().startsWith("win")){
+            return true;
+        }
+        return false;
     }
 }
