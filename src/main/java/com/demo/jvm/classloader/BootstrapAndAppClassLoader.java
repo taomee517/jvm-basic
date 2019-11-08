@@ -1,6 +1,6 @@
 package com.demo.jvm.classloader;
 
-public class ClassLoaderTest {
+public class BootstrapAndAppClassLoader {
     public static void main(String[] args) throws Exception{
         Class<?> clazz = Class.forName("java.lang.String");
         System.out.println(clazz.getClassLoader());
