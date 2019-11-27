@@ -13,6 +13,7 @@
         <slf4j-version>1.7.25</slf4j-version>
         <lombok-version>1.18.10</lombok-version>
         <junit-version>4.12</junit-version>
+        <jol-version>0.9</jol-version>
     </properties>
 
     <dependencies>
@@ -33,6 +34,12 @@
             <artifactId>lombok</artifactId>
             <version>${lombok-version}</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- openjdk.jol/jol-core -->
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>${jol-version}</version>
         </dependency>
         <!-- junit -->
         <dependency>
