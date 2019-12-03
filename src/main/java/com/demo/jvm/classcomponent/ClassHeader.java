@@ -1,6 +1,7 @@
 package com.demo.jvm.classcomponent;
 
 import org.openjdk.jol.info.ClassLayout;
+import org.openjdk.jol.info.GraphLayout;
 
 /**
  * 类的组成
@@ -26,11 +27,16 @@ public class ClassHeader {
      *      5. GC标记
      *
      */
+
+    private static BaseClass model = new BaseClass();
+
     public static void main(String[] args) {
-        BaseClass model = new BaseClass();
+        ClassHeader header = new ClassHeader();
         System.out.println(model.hashCode());
-        //打印出一个对象的组成
+        //查看对象内部信息,打印出一个对象的组成
         System.out.println(ClassLayout.parseInstance(model).toPrintable());
+        //查看对象外部信息：包括引用的对象：
+        System.out.println(GraphLayout.parseInstance(header).toPrintable());
 
     }
 }
