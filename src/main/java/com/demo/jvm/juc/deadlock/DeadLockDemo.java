@@ -1,4 +1,4 @@
-package com.demo.jvm.deadlock;
+package com.demo.jvm.juc.deadlock;
 
 /**
  * 一个死锁案例
