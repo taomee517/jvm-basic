@@ -17,6 +17,7 @@ import java.util.concurrent.locks.LockSupport;
 public class RedisLock implements Lock {
     private String methodName;
     private BlockingQueue<Thread> parkThreads = new LinkedBlockingQueue<>();
+    private static RedisDao redisDao = new RedisDao();
 
     public RedisLock(String methodName) {
         this.methodName = methodName;
@@ -38,7 +39,7 @@ public class RedisLock implements Lock {
     @Override
     public boolean tryLock() {
         String value = UUID.randomUUID().toString() + Thread.currentThread().getId();
-        boolean flag = RedisDao.setNxEx(methodName,value);
+        boolean flag = redisDao.setNxEx(methodName,value);
         if(flag){
             log.info("{}获得锁",Thread.currentThread().getName());
         }else {
@@ -54,7 +55,7 @@ public class RedisLock implements Lock {
 
     @Override
     public void unlock() {
-        if(RedisDao.delete(methodName)){
+        if(redisDao.delete(methodName)){
             log.info("{}释放锁",Thread.currentThread().getName());
             for(Thread thread : parkThreads){
                 LockSupport.unpark(thread);

@@ -6,12 +6,14 @@ import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 @Slf4j
 public class RedisDao {
     private static ThreadLocal<String> UNIQUE_SIGN = new ThreadLocal<>();
-    private static boolean isOpenExpirationRenewal = true;
+    private static ScheduledThreadPoolExecutor schedulePool = new ScheduledThreadPoolExecutor(1);
 
-    public static boolean setNxEx(String key, String value){
+    public boolean setNxEx(String key, String value){
         Jedis jedis = JedisBuilder.instance().getJedis();
         boolean flag = false;
         try {
@@ -22,7 +24,6 @@ public class RedisDao {
             UNIQUE_SIGN.set(value);
             if (flag) {
                 //开启定时刷新过期时间
-                isOpenExpirationRenewal = true;
                 scheduleExpirationRenewal(key,value);
             }
         } finally {
@@ -31,7 +32,7 @@ public class RedisDao {
         }
     }
 
-    public static boolean delete(String key){
+    public boolean delete(String key){
         Jedis jedis = JedisBuilder.instance().getJedis();
         boolean flag = false;
 //        try {
@@ -47,7 +48,6 @@ public class RedisDao {
 //        }
 
         try {
-            isOpenExpirationRenewal = false;
             String expectedValue = UNIQUE_SIGN.get();
             // 使用lua脚本进行原子删除操作
             String checkAndDelScript = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
@@ -65,18 +65,19 @@ public class RedisDao {
     }
 
 
-    private static void scheduleExpirationRenewal(String key, String value){
+    private void scheduleExpirationRenewal(String key, String value){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Jedis jedis = JedisBuilder.instance().getJedis();
                 try {
-                    while (isOpenExpirationRenewal){
+                    while (true) {
                         try {
                             Thread.sleep(8000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        log.info("se:{}",value);
                         String checkAndExpireScript = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
                                 "return redis.call('expire',KEYS[1],ARGV[2]) " +
                                 "else " +
@@ -84,6 +85,8 @@ public class RedisDao {
                         long result = ((long) jedis.eval(checkAndExpireScript, 1, key, value, "10"));
                         if(result>0){
                             log.info("执行延迟失效时间中...");
+                        }else {
+                            break;
                         }
                     }
                 } finally {
