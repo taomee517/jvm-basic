@@ -2,6 +2,7 @@ package com.demo.jvm.juc.distributedlock.lock;
 
 import com.demo.jvm.juc.distributedlock.service.MethodLockService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
 @Data
+@Slf4j
 public class MysqlLock implements Lock {
     private MethodLockService lockService = new MethodLockService();
     private String methodName;
@@ -35,9 +37,9 @@ public class MysqlLock implements Lock {
     public boolean tryLock() {
         boolean flag = lockService.lockMethod(methodName);
         if(flag){
-            System.out.println(Thread.currentThread().getName() + "获得锁");
+            log.info("{}获得锁",Thread.currentThread().getName());
         }else {
-            System.out.println(Thread.currentThread().getName() + "等待锁");
+            log.info("{}等待锁",Thread.currentThread().getName());
         }
         return flag;
     }
@@ -50,7 +52,7 @@ public class MysqlLock implements Lock {
     @Override
     public void unlock() {
         if(lockService.deleteLock(methodName)){
-            System.out.println(Thread.currentThread().getName() + "释放锁");
+            log.info("{}释放锁",Thread.currentThread().getName());
             for(Thread thread : parkThreads){
                 LockSupport.unpark(thread);
             }

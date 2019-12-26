@@ -1,7 +1,9 @@
 package com.demo.jvm.juc.distributedlock;
 
 import com.demo.jvm.juc.distributedlock.lock.MysqlLock;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class LockTest {
 
     public static void main(String[] args) throws Exception{
@@ -16,7 +18,7 @@ public class LockTest {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    System.out.println(Thread.currentThread().getName() + "执行任务!");
+                    log.info("{}执行任务!",Thread.currentThread().getName());
                     lock.unlock();
                 }
             }).start();
