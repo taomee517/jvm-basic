@@ -14,7 +14,9 @@
         <lombok-version>1.18.10</lombok-version>
         <junit-version>4.12</junit-version>
         <jol-version>0.9</jol-version>
+        <jedis-version>3.1.0</jedis-version>
         <mybatis-version>3.4.6</mybatis-version>
+        <commons-lang3-version>3.8.1</commons-lang3-version>
         <mysql-connector-version>5.1.46</mysql-connector-version>
     </properties>
 
@@ -43,6 +45,11 @@
             <artifactId>jol-core</artifactId>
             <version>${jol-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3-version}</version>
+        </dependency>
         <!-- junit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -64,6 +71,13 @@
             <artifactId>mybatis</artifactId>
             <version>${mybatis-version}</version>
         </dependency>
+        <!-- jedis相关依赖,用于验证redis分布式锁 -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis-version}</version>
+        </dependency>
+
     </dependencies>
 
 
