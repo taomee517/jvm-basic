@@ -59,6 +59,8 @@ public class RedisLock implements Lock {
             for(Thread thread : parkThreads){
                 LockSupport.unpark(thread);
             }
+        }else {
+            log.info("{}释放锁失败",Thread.currentThread().getName());
         }
     }
 

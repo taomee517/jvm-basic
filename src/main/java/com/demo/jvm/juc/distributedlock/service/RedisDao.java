@@ -28,16 +28,32 @@ public class RedisDao {
     public static boolean delete(String key){
         Jedis jedis = JedisBuilder.instance().getJedis();
         boolean flag = false;
+//        try {
+//            //get后,再比较,再delete 不能保证操作的原子性
+//            //建议采用lua脚本
+//            String srcValue = jedis.get(key);
+//            if(UNIQUE_SIGN.get().equals(srcValue)){
+//                flag = jedis.del(key)>0;
+//            }
+//        } finally {
+//            jedis.close();
+//            return flag;
+//        }
+
         try {
-            //get后,再比较,再delete 不能保证操作的原子性
-            //建议采用lua脚本
-            String srcValue = jedis.get(key);
-            if(UNIQUE_SIGN.get().equals(srcValue)){
-                flag = jedis.del(key)>0;
-            }
+            String expectedValue = UNIQUE_SIGN.get();
+            // 使用lua脚本进行原子删除操作
+            String checkAndDelScript = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
+                    "return redis.call('del', KEYS[1]) " +
+                    "else " +
+                    "return 0 " +
+                    "end";
+            Long delResult = ((Long) jedis.eval(checkAndDelScript, 1, key, expectedValue));
+            flag = delResult != 0;
         } finally {
             jedis.close();
             return flag;
         }
+
     }
 }
