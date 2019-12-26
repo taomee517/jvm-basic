@@ -1,12 +1,15 @@
 package com.demo.jvm.juc.distributedlock.service;
 
 import com.demo.jvm.juc.distributedlock.util.JedisBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
+@Slf4j
 public class RedisDao {
     private static ThreadLocal<String> UNIQUE_SIGN = new ThreadLocal<>();
+    private static boolean isOpenExpirationRenewal = true;
 
     public static boolean setNxEx(String key, String value){
         Jedis jedis = JedisBuilder.instance().getJedis();
@@ -17,6 +20,11 @@ public class RedisDao {
             setParams.ex(10);
             flag = StringUtils.isNotEmpty(jedis.set(key,value,setParams));
             UNIQUE_SIGN.set(value);
+            if (flag) {
+                //开启定时刷新过期时间
+                isOpenExpirationRenewal = true;
+                scheduleExpirationRenewal(key,value);
+            }
         } finally {
             jedis.close();
             return flag;
@@ -39,6 +47,7 @@ public class RedisDao {
 //        }
 
         try {
+            isOpenExpirationRenewal = false;
             String expectedValue = UNIQUE_SIGN.get();
             // 使用lua脚本进行原子删除操作
             String checkAndDelScript = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
@@ -53,5 +62,34 @@ public class RedisDao {
             return flag;
         }
 
+    }
+
+
+    private static void scheduleExpirationRenewal(String key, String value){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Jedis jedis = JedisBuilder.instance().getJedis();
+                try {
+                    while (isOpenExpirationRenewal){
+                        try {
+                            Thread.sleep(8000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        String checkAndExpireScript = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
+                                "return redis.call('expire',KEYS[1],ARGV[2]) " +
+                                "else " +
+                                "return 0 end";
+                        long result = ((long) jedis.eval(checkAndExpireScript, 1, key, value, "10"));
+                        if(result>0){
+                            log.info("执行延迟失效时间中...");
+                        }
+                    }
+                } finally {
+                    jedis.close();
+                }
+            }
+        }).start();
     }
 }
