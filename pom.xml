@@ -14,6 +14,8 @@
         <lombok-version>1.18.10</lombok-version>
         <junit-version>4.12</junit-version>
         <jol-version>0.9</jol-version>
+        <mybatis-version>3.4.6</mybatis-version>
+        <mysql-connector-version>5.1.46</mysql-connector-version>
     </properties>
 
     <dependencies>
@@ -47,6 +49,20 @@
             <artifactId>junit-jupiter</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!--mysql相关依赖,用于验证mysql分布式锁-->
+        <!--驱动依赖-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector-version}</version>
+        </dependency>
+        <!-- mybatis jar 依赖 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>${mybatis-version}</version>
         </dependency>
     </dependencies>
 
