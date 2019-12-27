@@ -60,6 +60,10 @@ public class RedisLock implements Lock {
             for(Thread thread : parkThreads){
                 LockSupport.unpark(thread);
             }
+
+//            if(parkThreads.size()>0){
+//                LockSupport.unpark(parkThreads.poll());
+//            }
         }else {
             log.info("{}释放锁失败",Thread.currentThread().getName());
         }
