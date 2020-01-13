@@ -2,6 +2,8 @@ package com.demo.jvm.juc.distributedlock;
 
 import com.demo.jvm.juc.distributedlock.lock.MysqlLock;
 import com.demo.jvm.juc.distributedlock.lock.RedisLock;
+import com.demo.jvm.juc.distributedlock.lock.ZookeeperLock;
+import com.demo.jvm.juc.distributedlock.service.ZkLockService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,7 +23,8 @@ public class LockTest {
 
 
 //        MysqlLock lock = new MysqlLock("demo");
-        RedisLock lock = new RedisLock("demo");
+//        RedisLock lock = new RedisLock("demo");
+        ZookeeperLock lock = new ZookeeperLock();
 
         for(int i=0;i<3;i++){
             new Thread(new Runnable() {
