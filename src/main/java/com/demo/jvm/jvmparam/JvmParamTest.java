@@ -52,6 +52,9 @@ public class JvmParamTest {
      * -Xmx 是指设定程序运行期间最大可占用的内存大小。如果程序运行需要占用更多的内存，超出了这个设置值，就会抛出OutOfMemory异常
      * -Xss 是指设定每个线程的堆栈大小。这个就要依据你的程序，看一个线程大约需要占用多少内存，可能会有多少线程同时运行等。
      * -Xmn 设置年轻代大小。整个堆大小=年轻代大小 + 年老代大小 + 持久代大小
+     *
+     * 当发生OOM时，直接干掉该程序
+     * -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC
      */
 
     static HashMap map = new HashMap();
