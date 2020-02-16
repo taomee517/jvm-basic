@@ -2,6 +2,7 @@ package com.demo.jvm.juc.stream;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class StreamSample {
     private static int transfer(int i){
@@ -20,6 +21,24 @@ public class StreamSample {
             }
         }
         System.out.println("List偶数求和为：" + sum);
+
+
+        //reduce的意思是：根据一定的规则将Stream中的元素进行计算后返回一个唯一的值
+        //这里不要用parallel
+        int max = list.stream()
+                .reduce((a,b) -> a>b?a:b)
+                .get();
+        System.out.println("reduce计算后的最大值是：" + max);
+
+        int s = list.stream()
+                .reduce(0, (total, a) -> total + a);
+        System.out.println("reduce计算后的总和是：" + s);
+
+
+        //orElse()：如果有值则将其返回，否则返回指定的其它值
+        int product = IntStream.range(2,8)
+                .reduce((a,b) -> a*b)
+                .orElse(-1);
 
 
         //流式写法, mapToInt(i->i)部分也可以用一个方法来替换
