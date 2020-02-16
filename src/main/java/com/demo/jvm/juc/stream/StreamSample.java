@@ -39,7 +39,7 @@ public class StreamSample {
         int product = IntStream.range(2,8)
                 .reduce((a,b) -> a*b)
                 .orElse(-1);
-
+        System.out.println("reduce计算后的乘积是：" + product);
 
         //流式写法, mapToInt(i->i)部分也可以用一个方法来替换
 //        int streamSum = list.stream().filter(i->i%2==0).mapToInt(i->i).sum();
