@@ -12,6 +12,20 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
+/**
+ * 分布式锁的三大难点：
+ * 1.防止死锁
+ *      解决方案：设置超时过期时间
+ * 2.非原子性操作
+ *      如setNx, expire
+ *      解决方案: setNxEx
+ * 3. 误删锁
+ *      如进程1对方法A加锁，设置超时30秒，进程2获得锁，对方法A进行操作
+ *      进程1对方法A进行解锁操作，可能会误删进程2的锁
+ *      解决方案：解锁时需要判断是否自己的加的锁
+ *
+ */
+
 @Data
 @Slf4j
 public class RedisLock implements Lock {
@@ -39,6 +53,8 @@ public class RedisLock implements Lock {
     @Override
     public boolean tryLock() {
         String value = UUID.randomUUID().toString() + Thread.currentThread().getId();
+        //如果key存在，则该方法已经被加锁
+        //如果key不存在，则该
         boolean flag = redisDao.setNxEx(methodName,value);
         if(flag){
             log.info("{}获得锁",Thread.currentThread().getName());

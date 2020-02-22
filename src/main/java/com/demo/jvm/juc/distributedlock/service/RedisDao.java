@@ -21,6 +21,7 @@ public class RedisDao {
             setParams.nx();
             setParams.ex(10);
             flag = StringUtils.isNotEmpty(jedis.set(key,value,setParams));
+            //确保value的唯一性：线程名，value值，时间戳
             UNIQUE_SIGN.set(value);
             if (flag) {
                 //开启定时刷新过期时间
