@@ -17,7 +17,7 @@
         <guava-version>18.0</guava-version>
         <jedis-version>3.1.0</jedis-version>
         <zookeeper-version>3.5.5</zookeeper-version>
-        <mybatis-version>3.4.6</mybatis-version>
+        <mybatis-version>3.5.6</mybatis-version>
         <commons-lang3-version>3.8.1</commons-lang3-version>
         <mysql-connector-version>5.1.46</mysql-connector-version>
     </properties>
