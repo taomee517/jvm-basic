@@ -45,6 +45,7 @@ public class ZkLockService {
         }
 
         // 创建EPHEMERAL_SEQUENTIAL类型子节点
+        // 临时有序节点特性： 访问时创建，断连时删除
         String lockPath = zkClient.create(LOCK_ROOT_PATH + "/" + LOCK_NODE_NAME,
                 Thread.currentThread().getName().getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.EPHEMERAL_SEQUENTIAL);
@@ -59,7 +60,8 @@ public class ZkLockService {
         }else {
             return;
         }
-        //判断是否子节点锁排序的第1位
+        // 如果同时创建了多个子节点（临时有序），子节点会排序，先创建的index小
+        // 判断是否子节点锁排序的第1位
         int index = nodePaths.indexOf(StringUtils.substring(lockPath,LOCK_ROOT_PATH.length() + 1));
         if(index == 0){
             log.info("{}获得锁",Thread.currentThread().getName());
